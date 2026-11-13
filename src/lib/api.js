@@ -46,4 +46,12 @@ export const api = {
     body: JSON.stringify(body),
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   }),
+  getModerationQueue: async (token) => request('/moderation', {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  }),
+  reviewModerationItem: async (payload, token) => request('/moderation', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  }),
 };

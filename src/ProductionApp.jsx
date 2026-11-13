@@ -8,8 +8,9 @@ Junubify is a React + Vite music catalog with Supabase authentication, database-
 2. In the Supabase SQL Editor, run `supabase/schema.sql`.
 3. Copy `.env.example` to `.env.local` and set the project URL and **anon/public** key. Never put a Supabase service-role key in a `VITE_` variable or browser code.
 4. Set `SUPABASE_SERVICE_ROLE_KEY` only in your server-side runtime (local env or Vercel project secrets) for the API layer.
-5. In Supabase Auth, configure the site URL and allowed redirect URLs for localhost and your Vercel domain. Configure email confirmation and SMTP for production.
-6. Install and run:
+5. Add `ADMIN_EMAILS` to your server-side env with a comma-separated list of moderator emails (for example `admin@example.com, ops@company.com`).
+6. In Supabase Auth, configure the site URL and allowed redirect URLs for localhost and your Vercel domain. Configure email confirmation and SMTP for production.
+7. Install and run:
 
 ```bash
 npm install
@@ -23,6 +24,7 @@ npm run dev
 - Output directory: `dist`
 - Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as Vercel environment variables for Preview and Production.
 - Add `SUPABASE_SERVICE_ROLE_KEY` as a server-side environment variable for the `/api` functions.
+- Add `ADMIN_EMAILS` to allow your moderation reviewers to access the admin dashboard.
 - Optionally set `VITE_API_BASE_URL=/api` for local and hosted environments.
 - The `.npmrc` setting permits standard dependency install scripts such as esbuild's binary setup; Vite's production build depends on esbuild.
 
@@ -34,8 +36,20 @@ This repo now includes a small production-ready backend API layer that runs unde
 - `GET /api/catalog` - returns published tracks from Supabase
 - `POST /api/catalog` - creates a pending track for an authenticated user
 - `POST /api/payouts` - creates a payout request for an authenticated artist
+- `GET /api/moderation` - returns pending track submissions and payout records for admins
+- `PATCH /api/moderation` - approves or rejects a track or payout request
 
 These routes use the Supabase service-role key server-side and validate the JWT before writing data, so the browser never exposes the service role credential.
+
+## Admin moderation dashboard
+
+The app includes an admin-only moderation dashboard for catalog review. It shows:
+
+- pending track uploads waiting for approval
+- pending payout requests waiting for review
+- approve / reject controls for tracks and payouts
+
+Only signed-in users whose email is listed in `ADMIN_EMAILS` or whose Supabase user role is `admin` or `moderator` can access the dashboard.
 
 ## Production functionality and safeguards
 
